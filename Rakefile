@@ -4,8 +4,8 @@ require 'echoe'
 require 'spec/rake/spectask'
 require 'spec/rake/verify_rcov'
 
-Echoe.new('ip_ranges', '0.0.1') do |p|
-  p.description    = "API for manipulating Confluence Users and Groups"
+Echoe.new('subnets', '0.0.1') do |p|
+  p.description    = "API for quering subnets"
   p.url            = "http://ucbrb.rubyforge.org"
   p.author         = "Steven Hansen"
   p.email          = "runner AT berkeley DOT edu"

@@ -3,7 +3,7 @@ require 'spec'
 require 'pp'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
-require 'ip_ranges'
+require 'subnets'
 
 
 # Spec::Runner.configure do |config|
