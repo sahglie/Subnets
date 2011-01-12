@@ -36,7 +36,7 @@ describe Subnets do
     @subnets.has_ip?("1.1.1.6").should be_false
   end
   
-  it "should know if a subnet is contained by a subnet in our set when sent#contained_by_subnet?" do
+  it "should know if a subnet is contained by our set when sent#contained_by_subnet?" do
     @subnets.add("1.1.1.0-1.1.1.5")
     @subnets.contained_by_subnet?("1.1.1.3-1.1.1.5").should be_true
     @subnets.contained_by_subnet?("1.1.1.0-1.1.1.5").should be_true
@@ -44,6 +44,16 @@ describe Subnets do
     @subnets.contained_by_subnet?("1.1.1.5-1.1.1.5").should be_true
     @subnets.contained_by_subnet?("1.1.1.4-1.1.1.5").should be_true
     @subnets.contained_by_subnet?("1.1.1.0-1.1.1.6").should be_false
+  end
+
+  it "should know if a subnet is in our set when sent#has_subnet?" do
+    @subnets.add("1.1.1.3-1.1.1.5")
+    @subnets.has_subnet?("1.1.1.3-1.1.1.5").should be_true
+    
+    @subnets.add("1.1.1.6-1.1.1.9")
+    @subnets.has_subnet?("1.1.1.6-1.1.1.9").should be_true
+
+    @subnets.has_subnet?("1.1.1.6-1.1.1.7").should be_false
   end
 end
 
