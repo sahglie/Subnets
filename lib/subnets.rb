@@ -52,8 +52,10 @@ class Subnets
   # @return [Array<String>] Array of all subnets that were in our set.
   #
   def clear()
+    subnets = @subnets.keys
     @subnets = {}
     @subnets_graph = {}
+    subnets
   end
   
   ##
@@ -99,24 +101,111 @@ class Subnets
   # @return [true,false] 
   #
   def contained_by_subnet?(subnet)
-    first_ip, last_ip = parse_subnet(subnet)
-    fetch_node(first_ip) == fetch_node(last_ip)
+    subnet = parse_subnet(subnet)
+    return falise unless valid_subnet?(subnet)
+    
+    first_ip, last_ip = ip_obj_array(subnet)
+    first_node = fetch_node(first_ip.to_s)
+    last_node = fetch_node(last_ip.to_s)
+    
+    first_node == last_node
   end
   
-  def octet_upper_bound=(ub)
-    @upper_bound = ub
+  ##
+  # Predicate indicating if the ip is contained by one of our subnets.
+  #
+  # @example
+  #  subnets = Subnets.new()
+  #  subnets.add("1.1.1.0-1.1.1.5")
+  #  subnets.has_ip?("1.1.1.1")
+  #  => true
+  #
+  #  subnets.has_ip?("1.1.1.9")
+  #  => false
+  #
+  # @param [String] The IP
+  # @return [true, false]
+  # 
+  def has_ip?(ip)
+    return false unless valid_subnet?("#{ip}-#{ip}")
+    fetch_node(ip)
   end
+  
+  ##
+  # Predicate indicating if the subnet is valid.
+  #
+  # @example
+  #  subnets = Subnets.new()
+  #  subnets.valid_subnet?("xxx")
+  #  => false
+  #
+  #  subnets.valid_subnet?("1.1.1.1-1.1.1.0")
+  #  => false
+  #
+  #  subnets.valid_subnet?("1.1.1.0-1.1.1.1")
+  #  => true
+  #
+  # @param [String] The subnet
+  # @return [true, false]
+  # 
+  def valid_subnet?(subnet)
+    unless (subnet =~ subnet_regexp())
+      return false
+    end
 
+    first, last = ip_obj_array(subnet)
+    first <= last
+  end
+  
+  ##
+  # Set the upper bound value for each octet.  The default is 255
+  #
+  # @example
+  #  subnets = Subnets.new()
+  #  subnets.octet_upper_bound = 4
+  #
+  #  Now the largest ip for the first or last value of a subnet
+  #  is 4.4.4.4
+  #
+  # @param [Integer] 
+  # 
+  def octet_upper_bound=(ub)
+    @upper_bound = ub.to_i
+  end
+  
+  ##
+  # @return [Integer] The current upper bound for each octet
+  # 
   def octet_upper_bound
     @upper_bound || OCTET_UPPER_BOUND
   end
-  
-  def subnet_regexp()
-    @subnet_regexp || SUBNET_REGEXP
-  end
 
+  ##
+  # Changes the regexp used to determine if a subnet is valid.  You
+  # restring subnets to 3 octets instead of 4 (the default) by swapping
+  # out the regexp.
+  #
+  # @example
+  #  subnets = Subnets.new()
+  #  subnets.valid_subnet?("1.1.0-1.1.1")
+  #  => false
+  #
+  #  subnets.subnet_regexp = /\d\.\d\.\d\-\d\.\d\.\d/
+  #  subnets.valid_subnet?("1.1.0-1.1.1")
+  #  => true
+  #
+  # @param [Regexp]
+  # 
   def subnet_regexp=(regexp)
     @subnet_regexp = regexp
+  end
+  
+  ##
+  # @return [Regexp] The current regexp used to validate the format of
+  # a subnet.
+  # 
+  def subnet_regexp()
+    (@subnet_regexp || SUBNET_REGEXP).dup
   end
   
   
@@ -142,16 +231,24 @@ class Subnets
     end
   end
   
-  def valid_subnet?(subnet)
-    subnet =~ subnet_regexp()
-    # make sure the subnet's 1st ip is smaller than the 2nd ip
+  ##
+  # @example
+  #  ip_obj_array("1.1.1.0-1.1.1.1")
+  # => [<Subnets::IP 1.1.1.0>, <Subnets::IP 1.1.1.1>]
+  #
+  # @param [String] Subnet
+  # @return [Array<Subnets::IP>]  First and last IP of the subnets
+  # 
+  def ip_obj_array(subnet)
+    a, b = subnet.split("-")
+    [Subnets::IP.new(a), Subnets::IP.new(b)]
   end
   
   def fetch_node(ip)
-    node = nil
-    ip.split(".").each do |i|
-      node = @subnets_graph[i]
-      return nil unless node
+    node = @subnets_graph
+    ip.split(".").map(&:to_i).each do |i|
+      return nil unless node[i]
+      node = node[i]
     end
     return node
   end
@@ -161,9 +258,8 @@ class Subnets
   end
   
   def generate_ips(subnet)
-    subnet = parse_subnet(subnet)
-    a, b = subnet.split("-")
-    first_ip, last_ip = Subnets::IP.new(a), Subnets::IP.new(b)
+    first_ip, last_ip = ip_obj_array(parse_subnet(subnet))    
+    
     ips = []
     while (first_ip <= last_ip)
       ips << first_ip
