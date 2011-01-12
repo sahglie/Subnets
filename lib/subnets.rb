@@ -11,6 +11,13 @@ class Subnets
   end
   
   ##
+  # @return [Array<String>] all the subnets in our set.
+  #
+  def subnets()
+    @subnets.keys()
+  end
+  
+  ##
   # Add a subnet to our set.  Requires that the set contains unique subnets;
   # however, subnets may overlap.
   #
@@ -52,7 +59,7 @@ class Subnets
   # @return [Array<String>] Array of all subnets that were in our set.
   #
   def clear()
-    subnets = @subnets.keys
+    subnets = self.subnets()
     @subnets = {}
     @subnets_graph = {}
     subnets
@@ -254,7 +261,7 @@ class Subnets
   end
   
   def parse_subnet(subnet)
-    subnet.gsub(/\s+/, "")
+    subnet.to_s.gsub(/\s+/, "")
   end
   
   def generate_ips(subnet)

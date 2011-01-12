@@ -4,6 +4,8 @@ Manifest
 README.md
 Rakefile
 lib/subnets.rb
+lib/subnets/ip.rb
 spec/spec.opts
 spec/spec_helper.rb
-spec/subnets/ip_ranges_spec.rb
+spec/unit/ip_spec.rb
+spec/unit/subnets_spec.rb

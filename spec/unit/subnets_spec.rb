@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Subnets do
 
+describe Subnets do
   before(:each) do
     @subnets = Subnets.new()
     @subnets.octet_upper_bound = 5
@@ -16,10 +16,9 @@ describe Subnets do
     end
 
     it "should not add an invalid subnet" do
-      snet = "xxx"
-      @subnets.has_subnet?(snet).should be_false
-      @subnets.add(snet).should be_false
-      @subnets.has_subnet?(snet).should be_false
+      @subnets.has_subnet?(22).should be_false
+      @subnets.add(22).should be_false
+      @subnets.has_subnet?(22).should be_false
     end
   end
 
@@ -54,6 +53,19 @@ describe Subnets do
     @subnets.has_subnet?("1.1.1.6-1.1.1.9").should be_true
 
     @subnets.has_subnet?("1.1.1.6-1.1.1.7").should be_false
+  end
+
+  it "should remove all subnets when sent#clear" do
+    ["1.1.1.3-1.1.1.5", "1.1.1.7-1.1.1.10"].each { |s| @subnets.add(s) }
+    @subnets.subnets.should have(2).subnets
+    @subnets.clear()
+    @subnets.subnets.should be_empty    
+  end
+
+  it "should return array of subnets when sent#subnets" do
+    @subnets.subnets.should be_empty
+    ["1.1.1.3-1.1.1.5", "1.1.1.7-1.1.1.10"].each { |s| @subnets.add(s) }
+    @subnets.subnets.should have(2).subnets
   end
 end
 
