@@ -23,8 +23,12 @@ describe Subnets do
   end
 
   it "should know if a subnet is valid when sent#valid_subnet?" do
-    @subnets.valid_subnet?("1.1.1.1-1.1.1.0").should be_false
     @subnets.valid_subnet?("xxx").should be_false
+    # First IP musb be smaller than last
+    @subnets.valid_subnet?("1.1.1.1-1.1.1.0").should be_false
+    # Upper bound has been exceeded
+    @subnets.valid_subnet?("1.1.1.0-1.1.1.6").should be_false
+    
     @subnets.valid_subnet?("1.1.1.0-1.1.1.1").should be_true
     @subnets.valid_subnet?("1.1.1.1-1.1.1.1").should be_true
   end

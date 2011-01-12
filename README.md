@@ -1,7 +1,7 @@
 Subnets
 ============
 
-Subnets is a data strucuture for storing a set of ubnets.  Its key functionality 
+Subnets is a data strucuture for storing a set of subnets.  Its key functionality 
 is quick lookups: determining if an IP or Subnet is in this set or contained by a
 Subnet in this set.
 
@@ -18,6 +18,7 @@ Add Subnets
     subnets.add("1.1.1.0-1.1.1.10")
     subnets.add("1.1.2.0-1.1.2.10")
 
+    # You can also use CIDR Format
     subnets.subnets()
     => ["1.1.1.0-1.1.1.10", "1.1.2.0-1.1.2.10"]
 

@@ -161,6 +161,7 @@ class Subnets
     end
 
     first, last = ip_obj_array(subnet)
+    return false unless octets_within_upper_bound?(first, last)
     first <= last
   end
   
@@ -274,5 +275,10 @@ class Subnets
     end
     ips
   end
-
+  
+  def octets_within_upper_bound?(first, last)
+    result = (first.octets() + last.octets()).all? do |oct|
+      oct <= octet_upper_bound()
+    end
+  end
 end
