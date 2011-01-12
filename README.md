@@ -1,37 +1,54 @@
-IpRanges
+Subnets
 ============
 
-IpRanges is a data strucuture for storing a set of IpRanges.  Its key functionality 
-is quick lookup: determining if an IP or IP Range is in this set or contained by an
-Ip Range in this set.
+Subnets is a data strucuture for storing a set of ubnets.  Its key functionality 
+is quick lookups: determining if an IP or Subnet is in this set or contained by a
+Subnet in this set.
 
 
 Usage
 --------
 
-Create a new IP Range container
+Create a new Subnet container
 
-    ranges = IpRanges.new
+    subnets = Subnets.new()
 
-Add IP Ranges
+Add Subnets
 
-    ranges.add("1.1.1.0-1.1.1.10")
-    ranges.add("1.1.2.0-1.1.2.10")
+    subnets.add("1.1.1.0-1.1.1.10")
+    subnets.add("1.1.2.0-1.1.2.10")
 
-Query IP Ranges
+    subnets.subnets()
+    => ["1.1.1.0-1.1.1.10", "1.1.2.0-1.1.2.10"]
 
-    ranges.has_range?("1.1.1.0-1.1.1.10")
+Query Subnets/IPs
+
+    subnets.has_subnet?("1.1.1.0-1.1.1.10")
     => true
 
-    ranges.has_range?("1.1.1.1-1.1.1.5")
+    subnets.has_subnet?("1.1.1.1-1.1.1.5")
     => false
 
-    ranges.contained_by_range?("1.1.1.1-1.1.1.5")
+    subnets.contained_by_subnet?("1.1.1.1-1.1.1.5")
     => true
 
-    ranges.contained_by_range?("1.1.1.6")
+    subnets.contained_by_subnet?("1.1.1.6")
     => true
 
-    ranges.contained_by_range?("1.1.1.11")
+    subnets.contained_by_subnet?("1.1.1.11")
     => false
+
+    subnets.has_ip?("1.1.1.5")
+    => true
+
+    subnets.has_ip?("2.1.1.0")
+    => false
+
+Clear Subnets
+
+    subnets.clear()
+    => ["1.1.1.0-1.1.1.10", "1.1.2.0-1.1.2.10"]
+
+    subnets.subnets()
+    => []
 
