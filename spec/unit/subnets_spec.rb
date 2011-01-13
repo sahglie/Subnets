@@ -4,7 +4,6 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe Subnets do
   before(:each) do
     @subnets = Subnets.new()
-    @subnets.octet_upper_bound = 5
   end
   
   context "Subnets#add()" do
@@ -27,10 +26,12 @@ describe Subnets do
     # First IP musb be smaller than last
     @subnets.valid_subnet?("1.1.1.1-1.1.1.0").should be_false
     # Upper bound has been exceeded
-    @subnets.valid_subnet?("1.1.1.0-1.1.1.6").should be_false
+    @subnets.valid_subnet?("1.1.1.0-1.1.1.256").should be_false
     
     @subnets.valid_subnet?("1.1.1.0-1.1.1.1").should be_true
     @subnets.valid_subnet?("1.1.1.1-1.1.1.1").should be_true
+
+    @subnets.valid_subnet?("1.1.1.1/24").should be_true
   end
   
   it "should know if an ip is contained by our subnets when sent#contains_ip?" do
@@ -53,22 +54,23 @@ describe Subnets do
     @subnets.add("1.1.1.3-1.1.1.5")
     @subnets.has_subnet?("1.1.1.3-1.1.1.5").should be_true
     
-    @subnets.add("1.1.1.6-1.1.1.9")
-    @subnets.has_subnet?("1.1.1.6-1.1.1.9").should be_true
+    @subnets.add("1.1.1.0-1.1.1.2")
+    @subnets.has_subnet?("1.1.1.0-1.1.1.2").should be_true
 
     @subnets.has_subnet?("1.1.1.6-1.1.1.7").should be_false
   end
 
   it "should remove all subnets when sent#clear" do
-    ["1.1.1.3-1.1.1.5", "1.1.1.7-1.1.1.10"].each { |s| @subnets.add(s) }
+    ["1.1.1.0-1.1.1.4", "1.1.1.1-1.1.1.2"].each { |s| @subnets.add(s) }
     @subnets.subnets.should have(2).subnets
-    @subnets.clear()
+    result = @subnets.clear()
+    result.should have(2).subnets
     @subnets.subnets.should be_empty    
   end
 
   it "should return array of subnets when sent#subnets" do
     @subnets.subnets.should be_empty
-    ["1.1.1.3-1.1.1.5", "1.1.1.7-1.1.1.10"].each { |s| @subnets.add(s) }
+["1.1.1.0-1.1.1.4", "1.1.1.1-1.1.1.2"].each { |s| @subnets.add(s) }
     @subnets.subnets.should have(2).subnets
   end
 end

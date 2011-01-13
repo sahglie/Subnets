@@ -2,13 +2,15 @@
 begin
   require 'bundler'
   Bundler.setup(:default, :development)
-  Bundler.require(:default, :development)    
+  Bundler.require(:default, :development)
 rescue LoadError
-  puts "Please install Bundler and run 'bundle install' to ensure you have all dependencies"
+  $stderr.puts("Please install Bundler and run 'bundle install' to ensure you have all dependencies")
+  exit(1)
 end
-  
+
 require 'spec/rake/spectask'
 require 'spec/rake/verify_rcov'
+require 'pp'
 
 
 Echoe.new('subnets', '0.0.1') do |p|

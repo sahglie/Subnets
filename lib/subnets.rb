@@ -1,4 +1,5 @@
 require 'subnets/ip'
+require 'netaddr'
 
 
 class Subnets
@@ -29,7 +30,6 @@ class Subnets
   # @return [true,false] true if the subnet was added, otherwise false.
   #
   def add(subnet)
-    subnet = parse_subnet(subnet)
     return false unless valid_subnet?(subnet)
     
     first_ip, last_ip = subnet.split("-")
@@ -109,7 +109,7 @@ class Subnets
   #
   def contained_by_subnet?(subnet)
     subnet = parse_subnet(subnet)
-    return falise unless valid_subnet?(subnet)
+    return false unless valid_subnet?(subnet)
     
     first_ip, last_ip = ip_obj_array(subnet)
     first_node = fetch_node(first_ip.to_s)
@@ -156,6 +156,7 @@ class Subnets
   # @return [true, false]
   # 
   def valid_subnet?(subnet)
+    subnet = parse_subnet(subnet)
     unless (subnet =~ subnet_regexp())
       return false
     end
@@ -262,7 +263,11 @@ class Subnets
   end
   
   def parse_subnet(subnet)
-    subnet.to_s.gsub(/\s+/, "")
+    subnet = subnet.to_s.gsub(/\s+/, "")
+    cidr = ::NetAddr::CIDR.create(subnet)
+    return "#{cidr.first}-#{cidr.last}"
+  rescue ::NetAddr::ValidationError => e
+    return subnet
   end
   
   def generate_ips(subnet)
