@@ -17,10 +17,13 @@ Add Subnets
 
     subnets.add("1.1.1.0-1.1.1.10")
     subnets.add("1.1.2.0-1.1.2.10")
-
-    # You can also use CIDR Format
     subnets.subnets()
     => ["1.1.1.0-1.1.1.10", "1.1.2.0-1.1.2.10"]
+
+    # You can also use CIDR Format
+    subnets.add("1.1.1.0/24")
+    subnets.subnets()
+    => ["1.1.1.0-1.1.1.10", "1.1.2.0-1.1.2.10", "1.1.1.0-1.1.1.255"]
 
 Query Subnets/IPs
 
